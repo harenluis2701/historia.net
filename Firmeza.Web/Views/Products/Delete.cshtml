@@ -1,0 +1,29 @@
+﻿@model Firmeza.Web.Models.Product
+
+@{
+    ViewData["Title"] = "Eliminar Producto";
+}
+
+<h1 class="text-danger mb-4">Eliminar Producto</h1>
+
+<h3>¿Estás seguro de que deseas eliminar este registro?</h3>
+<div class="card mt-4">
+    <div class="card-body">
+        <h5 class="card-title">Detalles del Producto</h5>
+        <hr />
+        <dl class="row">
+            <dt class="col-sm-3">Nombre</dt>
+            <dd class="col-sm-9">@Model.Name</dd>
+            
+            <dt class="col-sm-3">Precio</dt>
+            <dd class="col-sm-9">@Model.Price</dd>
+        </dl>
+        
+        @* Este formulario envía la confirmación definitiva al método POST *@
+        <form asp-action="Delete" method="post">
+            <input type="hidden" asp-for="Id" />
+            <button type="submit" class="btn btn-danger">Sí, Eliminar Definitivamente</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>
