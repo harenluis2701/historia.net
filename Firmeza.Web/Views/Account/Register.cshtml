@@ -1,0 +1,43 @@
+﻿@model Firmeza.Web.Models.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Registro de Usuario";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <h2 class="mb-4 text-center">Registrar Nueva Cuenta</h2>
+
+            <form asp-action="Register" method="post" class="card p-4 shadow-sm">
+                
+                @* Muestra los errores generales si la contraseña no cumple los requisitos *@
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label">Correo Electrónico</label>
+                    <input asp-for="Email" class="form-control" placeholder="ejemplo@correo.com" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Password" class="form-label">Contraseña</label>
+                    <input asp-for="Password" class="form-control" type="password" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Role" class="form-label">Rol en el Sistema</label>
+                    <select asp-for="Role" class="form-select">
+                        <option value="">Selecciona un rol...</option>
+                        <option value="Administrador">Administrador</option>
+                        <option value="Cliente">Cliente</option>
+                    </select>
+                    <span asp-validation-for="Role" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">Registrarse</button>
+            </form>
+        </div>
+    </div>
+</div>

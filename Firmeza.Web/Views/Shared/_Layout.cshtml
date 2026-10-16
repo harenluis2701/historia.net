@@ -1,50 +1,93 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>@ViewData["Title"] - Firmeza.Web</title>
-    <script type="importmap"></script>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
-    <link rel="stylesheet" href="~/Firmeza.Web.styles.css" asp-append-version="true"/>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Firmeza Dashboard</title>
+    <!-- Mantiene los estilos de Bootstrap por defecto de .NET -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <style>
+        /* CSS para estructurar la barra lateral y el contenido */
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: #f4f6f9;
+        }
+        .wrapper {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        .sidebar {
+            min-width: 250px;
+            max-width: 250px;
+            background-color: #343a40;
+            color: white;
+            transition: all 0.3s;
+        }
+        .sidebar a {
+            color: #c2c7d0;
+            text-decoration: none;
+            padding: 15px 20px;
+            display: block;
+            border-bottom: 1px solid #4f5962;
+        }
+        .sidebar a:hover {
+            background-color: #495057;
+            color: #ffffff;
+        }
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+    </style>
 </head>
 <body>
-<header>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-        <div class="container-fluid">
-            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Firmeza.Web</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                <ul class="navbar-nav flex-grow-1">
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                    </li>
-                </ul>
+    <!-- Barra superior oscura (Navbar) -->
+    <header>
+        <nav class="navbar navbar-dark bg-dark border-bottom border-secondary px-3">
+            <a class="navbar-brand fw-bold" asp-area="" asp-controller="Home" asp-action="Index">FIRMEZA ADMIN</a>
+            <div class="d-flex align-items-center">
+                <span class="text-light me-3">Bienvenido, Administrador</span>
+                <!-- Botón funcional para cerrar sesión -->
+                <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Cerrar Sesión</button>
+                </form>
             </div>
-        </div>
-    </nav>
-</header>
-<div class="container">
-    <main role="main" class="pb-3">
-        @RenderBody()
-    </main>
-</div>
+        </nav>
+    </header>
 
-<footer class="border-top footer text-muted">
-    <div class="container">
-        &copy; 2026 - Firmeza.Web - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <div class="wrapper">
+        <!-- Menú Lateral (Sidebar) -->
+        <aside class="sidebar pt-2">
+            <ul class="list-unstyled mb-0">
+                <li>
+                    <a asp-controller="Home" asp-action="Index">📊 Inicio (Dashboard)</a>
+                </li>
+                <li>
+                    <a asp-controller="Products" asp-action="Index">📦 Gestión de Productos</a>
+                </li>
+                <li>
+                    <a asp-controller="Customers" asp-action="Index">👥 Gestión de Clientes</a>
+                </li>
+                <li>
+                    <a href="#">💰 Registro de Ventas</a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Contenedor Principal donde se inyectan las demás vistas -->
+        <main role="main" class="main-content">
+            @RenderBody()
+        </main>
     </div>
-</footer>
-<script src="~/lib/jquery/dist/jquery.min.js"></script>
-<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-<script src="~/js/site.js" asp-append-version="true"></script>
-@await RenderSectionAsync("Scripts", required: false)
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

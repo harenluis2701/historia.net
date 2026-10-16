@@ -1,0 +1,32 @@
+﻿@{
+    ViewData["Title"] = "Validar Edad";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow border-0">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Prueba de Manejo de Errores (Try-Catch)</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="ValidarEdad" method="post">
+                        <div class="mb-3">
+                            <label for="edadTexto" class="form-label">Ingresa tu edad:</label>
+                            <input type="text" id="edadTexto" name="edadTexto" class="form-control" placeholder="Ej. 25 o escribe letras para probar el error" required />
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Verificar Edad</button>
+                    </form>
+
+                    <!-- Aquí mostramos el mensaje amigable si el controlador lo envía -->
+                    @if (ViewBag.Mensaje != null)
+                    {
+                        <div class="alert alert-@ViewBag.TipoAlerta mt-4" role="alert">
+                            @ViewBag.Mensaje
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

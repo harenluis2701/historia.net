@@ -1,0 +1,67 @@
+﻿@model IEnumerable<Firmeza.Web.Models.Customer>
+
+@{
+    ViewData["Title"] = "Gestión de Clientes";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4 text-dark fw-bold">👥 Gestión de Clientes</h2>
+
+    <!-- Barra de búsqueda y botón de crear -->
+    <div class="row mb-4">
+        <div class="col-md-5">
+            <a asp-action="Create" class="btn btn-primary shadow-sm">Registrar Nuevo Cliente</a>
+        </div>
+        <div class="col-md-7">
+            <!-- Formulario del buscador que envía el texto al método Index -->
+            <form asp-action="Index" method="get" class="d-flex">
+                <input type="text" name="buscar" class="form-control me-2 shadow-sm" placeholder="Buscar por nombre o documento..." />
+                <button type="submit" class="btn btn-success shadow-sm">Buscar</button>
+                <a asp-action="Index" class="btn btn-outline-secondary ms-2 shadow-sm">Limpiar</a>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabla de clientes -->
+    <div class="card shadow border-0 rounded-3">
+        <div class="card-body p-0">
+            <table class="table table-striped table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Documento</th>
+                        <th>Nombre Completo</th>
+                        <th>Correo</th>
+                        <th>Teléfono</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center py-4">No se encontraron clientes.</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.Document</td>
+                                <td>@item.FullName</td>
+                                <td>@item.Email</td>
+                                <td>@item.Phone</td>
+                                <td>
+                                    <!-- Botones de acciones del CRUD -->
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Editar</a>
+                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Detalles</a>
+                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Eliminar</a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
