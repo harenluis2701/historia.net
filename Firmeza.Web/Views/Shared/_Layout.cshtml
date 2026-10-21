@@ -6,44 +6,8 @@
     <title>@ViewData["Title"] - Firmeza Dashboard</title>
     <!-- Mantiene los estilos de Bootstrap por defecto de .NET -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <!-- Llama a tu archivo site.css personalizado -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <style>
-        /* CSS para estructurar la barra lateral y el contenido */
-        body {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            background-color: #f4f6f9;
-        }
-        .wrapper {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
-        .sidebar {
-            min-width: 250px;
-            max-width: 250px;
-            background-color: #343a40;
-            color: white;
-            transition: all 0.3s;
-        }
-        .sidebar a {
-            color: #c2c7d0;
-            text-decoration: none;
-            padding: 15px 20px;
-            display: block;
-            border-bottom: 1px solid #4f5962;
-        }
-        .sidebar a:hover {
-            background-color: #495057;
-            color: #ffffff;
-        }
-        .main-content {
-            flex: 1;
-            padding: 30px;
-            overflow-y: auto;
-        }
-    </style>
 </head>
 <body>
     <!-- Barra superior oscura (Navbar) -->
@@ -52,7 +16,6 @@
             <a class="navbar-brand fw-bold" asp-area="" asp-controller="Home" asp-action="Index">FIRMEZA ADMIN</a>
             <div class="d-flex align-items-center">
                 <span class="text-light me-3">Bienvenido, Administrador</span>
-                <!-- Botón funcional para cerrar sesión -->
                 <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
                     <button type="submit" class="btn btn-sm btn-outline-danger">Cerrar Sesión</button>
                 </form>
@@ -79,10 +42,17 @@
             </ul>
         </aside>
 
-        <!-- Contenedor Principal donde se inyectan las demás vistas -->
-        <main role="main" class="main-content">
-            @RenderBody()
-        </main>
+        <!-- Contenedor Principal y Footer -->
+        <div class="d-flex flex-column w-100">
+            <main role="main" class="main-content">
+                @RenderBody()
+            </main>
+            
+            <!-- Pie de página (Footer) agregado para la Task 9 -->
+            <footer class="admin-footer">
+                &copy; @DateTime.Now.Year - Firmeza Dashboard. Todos los derechos reservados. | Desarrollado para la gestión de inventarios y clientes.
+            </footer>
+        </div>
     </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

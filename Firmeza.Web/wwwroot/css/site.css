@@ -1,31 +1,123 @@
-html {
-  font-size: 14px;
+/* =========================================================
+   VARIABLES GLOBALES (Colores y Tipografía)
+   ========================================================= */
+:root {
+  --primary-color: #0d6efd;      /* Azul principal */
+  --secondary-color: #6c757d;    /* Gris secundario */
+  --dark-bg: #343a40;            /* Fondo oscuro para sidebar/navbar */
+  --light-bg: #f4f6f9;           /* Fondo gris muy claro para el panel */
+  --text-dark: #333333;          /* Texto principal */
+  --text-light: #ffffff;         /* Texto sobre fondos oscuros */
+  --border-color: #dee2e6;       /* Color de bordes suaves */
+
+  --font-family-base: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+/* =========================================================
+   ESTRUCTURA GENERAL DEL DASHBOARD
+   ========================================================= */
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: var(--font-family-base);
+  background-color: var(--light-bg);
+  color: var(--text-dark);
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+/* Evita que el contenedor principal colapse */
+.wrapper {
+  display: flex;
+  flex: 1;
+  min-height: calc(100vh - 56px - 60px); /* Ajusta altura restando header y footer */
+  overflow: hidden;
 }
 
-html {
-  position: relative;
-  min-height: 100%;
+/* =========================================================
+   SIDEBAR (Barra Lateral)
+   ========================================================= */
+.sidebar {
+  min-width: 250px;
+  max-width: 250px;
+  background-color: var(--dark-bg);
+  color: var(--text-light);
+  transition: all 0.3s;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
 }
 
-body {
-  margin-bottom: 60px;
+.sidebar a {
+  color: #c2c7d0;
+  text-decoration: none;
+  padding: 15px 20px;
+  display: block;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  font-weight: 500;
+  transition: background-color 0.2s, color 0.2s;
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+.sidebar a:hover, .sidebar a.active {
+  background-color: #495057;
+  color: var(--text-light);
+  border-left: 4px solid var(--primary-color);
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+/* =========================================================
+   ÁREA DE CONTENIDO PRINCIPAL
+   ========================================================= */
+.main-content {
+  flex: 1;
+  padding: 30px;
+  overflow-y: auto;
+  background-color: var(--light-bg);
+}
+
+/* Estilo unificado para las tarjetas (Cards) */
+.card {
+  border: none;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.card-header {
+  background-color: #ffffff;
+  border-bottom: 1px solid var(--border-color);
+  font-weight: bold;
+  padding: 15px 20px;
+}
+
+/* =========================================================
+   TABLAS Y BOTONES
+   ========================================================= */
+.table {
+  background-color: #ffffff;
+  margin-bottom: 0;
+}
+
+.table thead th {
+  border-bottom: 2px solid var(--border-color);
+  background-color: #f8f9fa;
+  color: #495057;
+}
+
+.btn {
+  border-radius: 6px;
+  font-weight: 500;
+  padding: 8px 16px;
+  transition: transform 0.1s;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+/* =========================================================
+   FOOTER (Pie de página)
+   ========================================================= */
+.admin-footer {
+  background-color: #ffffff;
+  border-top: 1px solid var(--border-color);
+  padding: 15px 20px;
+  text-align: center;
+  color: var(--secondary-color);
+  font-size: 0.9rem;
 }

@@ -1,0 +1,42 @@
+﻿@model Firmeza.Web.Models.Customer
+
+@{
+    ViewData["Title"] = "Eliminar Cliente";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4 text-danger fw-bold">🗑️ Eliminar Cliente</h2>
+
+    <div class="alert alert-warning shadow-sm">
+        <h4 class="alert-heading">¡Atención!</h4>
+        <p>¿Estás seguro de que deseas eliminar permanentemente a este cliente? Esta acción no se puede deshacer.</p>
+    </div>
+
+    <div class="card shadow border-0 rounded-3 mt-4">
+        <div class="card-body p-4">
+            <h5 class="card-title fw-semibold mb-3">Detalles del Cliente</h5>
+            <hr />
+            <dl class="row mb-0">
+                <dt class="col-sm-3 text-muted">Documento</dt>
+                <dd class="col-sm-9 fw-bold">@Model.Document</dd>
+                
+                <dt class="col-sm-3 text-muted">Nombre Completo</dt>
+                <dd class="col-sm-9 fw-bold">@Model.FullName</dd>
+                
+                <dt class="col-sm-3 text-muted">Correo</dt>
+                <dd class="col-sm-9">@Model.Email</dd>
+                
+                <dt class="col-sm-3 text-muted">Teléfono</dt>
+                <dd class="col-sm-9">@Model.Phone</dd>
+            </dl>
+        </div>
+        <div class="card-footer bg-white border-0 text-end p-4 pt-0">
+            <!-- Este formulario envía la confirmación definitiva al método POST -->
+            <form asp-action="Delete" method="post">
+                <input type="hidden" asp-for="Id" />
+                <a asp-action="Index" class="btn btn-outline-secondary me-2 shadow-sm">Cancelar</a>
+                <button type="submit" class="btn btn-danger shadow-sm">Sí, Eliminar Definitivamente</button>
+            </form>
+        </div>
+    </div>
+</div>

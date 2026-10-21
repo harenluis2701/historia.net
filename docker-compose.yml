@@ -1,0 +1,30 @@
+﻿services:
+  # Servicio 1: Base de datos PostgreSQL
+  firmeza-db:
+    image: postgres:latest
+    container_name: firmeza-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Define POSTGRES_PASSWORD en el entorno}
+      POSTGRES_DB: FirmezaDB
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  # Servicio 2: Aplicación web
+  firmeza-web:
+    build:
+      context: ./Firmeza.Web
+      dockerfile: Dockerfile
+    container_name: firmeza-web
+    ports:
+      - "8080:8080"
+    depends_on:
+      - firmeza-db
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__DefaultConnection: Host=firmeza-db;Port=5432;Database=FirmezaDB;Username=postgres;Password=${POSTGRES_PASSWORD:?Define POSTGRES_PASSWORD en el entorno}
+
+volumes:
+  pgdata:
