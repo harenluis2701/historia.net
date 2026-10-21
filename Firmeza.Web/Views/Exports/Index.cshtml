@@ -1,0 +1,5 @@
+@{ ViewData["Title"] = "Exportar información"; }
+<h1 class="mb-4">Exportar información</h1>
+<div class="row g-3">
+@foreach (var tipo in new[] { "productos", "clientes", "ventas" }) { <div class="col-md-4"><div class="card"><div class="card-body"><h2 class="h5 text-capitalize">@tipo</h2><a asp-action="Excel" asp-route-tipo="@tipo" class="btn btn-outline-success">Descargar Excel</a> <a asp-action="Pdf" asp-route-tipo="@tipo" class="btn btn-outline-danger">Descargar PDF</a></div></div></div> }
+</div>

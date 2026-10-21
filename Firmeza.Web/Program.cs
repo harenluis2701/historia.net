@@ -1,7 +1,13 @@
 using Firmeza.Web.Data;
+using Firmeza.Web.Services;
+using System.Globalization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
+
+var colombianCulture = CultureInfo.GetCultureInfo("es-CO");
+CultureInfo.DefaultThreadCurrentCulture = colombianCulture;
+CultureInfo.DefaultThreadCurrentUICulture = colombianCulture;
 
 // Agregar configuración de base de datos PostgreSQL
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -14,6 +20,8 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<SpreadsheetImportService>();
+SpreadsheetLicense.Configure(builder.Configuration);
 
 var app = builder.Build();
 
@@ -29,6 +37,12 @@ app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    await db.Database.MigrateAsync();
+}
 
 app.MapStaticAssets();
 

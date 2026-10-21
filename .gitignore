@@ -480,3 +480,6 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Comprobantes PDF generados por la aplicaci�n
+Firmeza.Web/wwwroot/recibos/*.pdf

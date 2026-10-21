@@ -1,0 +1,5 @@
+@model Firmeza.Web.Models.Sale
+@{ ViewData["Title"] = $"Venta #{Model.Id}"; }
+<div class="d-flex justify-content-between mb-4"><h1>Venta #@Model.Id</h1><a asp-action="Receipt" asp-route-id="@Model.Id" class="btn btn-primary">Descargar comprobante PDF</a></div>
+<div class="card mb-3"><div class="card-body"><p><strong>Cliente:</strong> @Model.Customer.FullName (@Model.Customer.Document)</p><p><strong>Fecha:</strong> @Model.CreatedAt.ToLocalTime().ToString("g")</p><table class="table"><thead><tr><th>Producto</th><th>Cantidad</th><th>Precio</th><th>Total</th></tr></thead><tbody>@foreach (var item in Model.Items) { <tr><td>@item.Product.Name</td><td>@item.Quantity</td><td>@item.UnitPrice.ToString("C")</td><td>@item.LineTotal.ToString("C")</td></tr> }</tbody></table><div class="text-end"><div>Subtotal: @Model.Subtotal.ToString("C")</div><div>IVA: @Model.Tax.ToString("C")</div><h4>Total: @Model.Total.ToString("C")</h4></div></div></div>
+<a asp-action="Index" class="btn btn-outline-secondary">Volver a ventas</a>

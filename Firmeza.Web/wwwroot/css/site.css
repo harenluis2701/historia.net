@@ -121,3 +121,11 @@ html, body {
   color: var(--secondary-color);
   font-size: 0.9rem;
 }
+
+@media (max-width: 767.98px) {
+  .wrapper { flex-direction: column; overflow: visible; }
+  .sidebar { min-width: 100%; max-width: 100%; }
+  .sidebar ul { display: flex; overflow-x: auto; }
+  .sidebar a { white-space: nowrap; padding: 12px 14px; }
+  .main-content { padding: 18px; overflow: visible; }
+}

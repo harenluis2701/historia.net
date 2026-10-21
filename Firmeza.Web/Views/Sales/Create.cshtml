@@ -1,0 +1,11 @@
+@model Firmeza.Web.Models.SaleCreateViewModel
+@{ ViewData["Title"] = "Registrar venta"; }
+<h1 class="mb-4">Registrar venta</h1>
+<div class="card"><div class="card-body"><form asp-action="Create" method="post">
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div class="mb-3"><label asp-for="CustomerId" class="form-label">Cliente</label><select asp-for="CustomerId" class="form-select"><option value="">Selecciona cliente</option>@foreach (var customer in Model.Customers) { <option value="@customer.Id">@customer.FullName · @customer.Document</option> }</select><span asp-validation-for="CustomerId" class="text-danger"></span></div>
+<div class="mb-3"><label asp-for="ProductId" class="form-label">Producto</label><select asp-for="ProductId" class="form-select"><option value="">Selecciona producto</option>@foreach (var product in Model.Products) { <option value="@product.Id">@product.Name · @product.Price.ToString("C") · stock @product.Stock</option> }</select><span asp-validation-for="ProductId" class="text-danger"></span></div>
+<div class="mb-3"><label asp-for="Quantity" class="form-label">Cantidad</label><input asp-for="Quantity" class="form-control" min="1"/><span asp-validation-for="Quantity" class="text-danger"></span></div>
+<button class="btn btn-primary" type="submit">Registrar y generar recibo</button> <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+</form></div></div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

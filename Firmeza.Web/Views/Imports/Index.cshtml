@@ -1,0 +1,6 @@
+@{ ViewData["Title"] = "Importación masiva"; }
+<h1 class="mb-3">Importación masiva desde Excel</h1>
+<p class="text-muted">Carga un archivo .xlsx. Se reconocen encabezados en español o inglés para productos y clientes; una fila con producto, precio, cliente con documento y cantidad crea también una venta.</p>
+<div asp-validation-summary="All" class="alert alert-danger"></div>
+<div class="card"><div class="card-body"><form asp-action="Index" method="post" enctype="multipart/form-data"><div class="mb-3"><label for="file" class="form-label">Archivo Excel (.xlsx), máximo 10 MB</label><input type="file" name="file" id="file" class="form-control" accept=".xlsx" required /></div><button class="btn btn-primary" type="submit">Importar datos</button></form></div></div>
+<div class="alert alert-info mt-3"><strong>Campos admitidos:</strong> producto/nombre, precio, descripción, stock, cliente/nombre, documento, correo, teléfono, cantidad, fecha.</div>
