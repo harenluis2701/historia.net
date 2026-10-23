@@ -6,7 +6,7 @@
     restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Define POSTGRES_PASSWORD en el entorno}
+      POSTGRES_PASSWORD: FirmezaHaren
       POSTGRES_DB: FirmezaDB
     ports:
       - "5432:5432"
@@ -33,10 +33,39 @@
     environment:
       ASPNETCORE_ENVIRONMENT: Production
       EPPlus__License: ${EPPLUS_LICENSE:-}
-      ConnectionStrings__DefaultConnection: Host=firmeza-db;Port=5432;Database=FirmezaDB;Username=postgres;Password=${POSTGRES_PASSWORD:?Define POSTGRES_PASSWORD en el entorno}
+      ConnectionStrings__DefaultConnection: Host=firmeza-db;Port=5432;Database=FirmezaDB;Username=postgres;Password=FirmezaHaren
     volumes:
       - recibos:/app/wwwroot/recibos
+
+  firmeza-api:
+    build:
+      context: .
+      dockerfile: Firmeza.Api/Dockerfile
+    container_name: firmeza-api
+    restart: unless-stopped
+    ports:
+      - "8081:8080"
+    depends_on:
+      firmeza-db:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__DefaultConnection: Host=firmeza-db;Port=5432;Database=FirmezaDB;Username=postgres;Password=FirmezaHaren
+      Jwt__Key: FirmezaSilvaFirmezaSilvaFirmezaSilva
+      Cors__AllowedOrigins__0: ${BLAZOR_ORIGIN:-http://localhost:5173}
+      Email__Host: smtp.gmail.com
+      Email__Port: 587
+      Email__User: ${SMTP_USER:-}
+      Email__Password: ${SMTP_PASSWORD:-}
+      Email__FromAddress: ${SMTP_FROM_ADDRESS:-}
+      Email__FromName: Firmeza
+      Email__EnableSsl: "true"
+      BootstrapAdmin__Email: ${ADMIN_EMAIL:-}
+      BootstrapAdmin__Password: ${ADMIN_PASSWORD:-}
 
 volumes:
   pgdata:
   recibos:
+
+
+

@@ -5,12 +5,13 @@ Aplicación web ASP.NET Core MVC para gestionar productos, clientes e inventario
 ## Funcionalidades
 
 - CRUD de productos y clientes con navegación adaptable a móvil.
+- API REST ASP.NET Core para productos, clientes y ventas, protegida con JWT y roles `Admin`/`Cliente`, con documentación Swagger y DTOs de AutoMapper.
 - Importación masiva de libros `.xlsx` con encabezados mezclados o desordenados. Reconoce encabezados en español e inglés, normaliza acentos y mayúsculas, actualiza productos/clientes por nombre/documento y registra inconsistencias por fila.
 - Si una fila contiene producto, precio, cliente con documento y cantidad, importa también una venta y descuenta existencias. La cantidad debe ser un entero positivo y el stock debe alcanzar.
 - Exportación de productos, clientes y ventas a Excel y PDF.
 - Registro de ventas, validación de inventario, cálculo de IVA del 19% y recibo PDF descargable. Los comprobantes se escriben en `wwwroot/recibos`.
 - Migraciones de Entity Framework aplicadas automáticamente al arrancar la aplicación.
-- Prueba unitaria del cálculo del subtotal, IVA y total.
+- Pruebas unitarias xUnit del cálculo de venta, perfiles AutoMapper y emisión de JWT.
 
 ### Encabezados aceptados en Excel
 
@@ -55,6 +56,48 @@ $env:EPPlus__License = "NonCommercialPersonal:Tu Nombre"
 
 EPPlus 8 requiere configuración de licencia. Revisa si la licencia no comercial aplica al uso previsto; una organización comercial requiere licencia comercial. La licencia de QuestPDF Community también tiene criterios propios: confirma que el proyecto califica antes de distribuirlo comercialmente.
 
+## API REST
+
+El proyecto independiente `Firmeza.Api` reutiliza `ApplicationDbContext`, las migraciones y las entidades del módulo MVC, por lo que ambos proyectos consultan la misma base PostgreSQL. El archivo `Firmeza.Api/appsettings.json` contiene host, puerto, base de datos y usuario de desarrollo; la contraseña y la clave JWT se suministran con User Secrets o variables de entorno.
+
+| Método y ruta | Acceso | Descripción |
+| --- | --- | --- |
+| `GET /api/health` | Público | Verifica conectividad y consulta las tablas de productos, clientes y ventas. |
+| `POST /api/auth/register` | Público | Crea cuenta Identity y perfil `Cliente`, envía bienvenida si SMTP está configurado y entrega token. |
+| `POST /api/auth/login` | Público | Valida credenciales y emite JWT con roles. |
+| `GET /api/products` | JWT | Lista, busca (`search`), filtra por precio y existencias. |
+| `GET /api/products/{id}` | JWT | Consulta producto. |
+| `POST /api/products`, `PUT /api/products/{id}`, `DELETE /api/products/{id}` | Admin | CRUD de productos. |
+| `GET /api/customers/me` | Cliente | Lee el perfil asociado al correo autenticado. |
+| `GET /api/customers`, `GET /api/customers/{id}` | Admin | Lista/busca y consulta clientes. |
+| `POST /api/customers`, `PUT /api/customers/{id}`, `DELETE /api/customers/{id}` | Admin | CRUD de clientes. |
+| `GET /api/sales`, `GET /api/sales/{id}` | Admin o Cliente | El rol Cliente solo accede a sus propias ventas. |
+| `POST /api/sales` | Admin o Cliente | Registra venta, descuenta inventario y envía confirmación de compra. |
+| `PUT`, `DELETE /api/sales/{id}` | Admin | Actualiza o elimina venta y ajusta inventario. |
+
+El arranque crea los roles `Admin` y `Cliente`. El registro público solo asigna `Cliente`; para crear o promover un administrador, configura `BootstrapAdmin__Email` y `BootstrapAdmin__Password` en secretos de desarrollo o despliegue. No hay endpoint público para asignar privilegios.
+
+### Ejecutar la API
+
+Configura secretos locales (el valor de `Jwt:Key` debe tener al menos 32 bytes):
+
+```powershell
+dotnet user-secrets init --project Firmeza.Api
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Host=localhost;Port=5432;Database=FirmezaDB;Username=postgres;Password=TU_CLAVE" --project Firmeza.Api
+dotnet user-secrets set "Jwt:Key" "CAMBIA_POR_UN_SECRETO_ALEATORIO_DE_64_CARACTERES" --project Firmeza.Api
+dotnet user-secrets set "BootstrapAdmin:Email" "admin@ejemplo.com" --project Firmeza.Api
+dotnet user-secrets set "BootstrapAdmin:Password" "CAMBIA_POR_UNA_CLAVE_SEGURA" --project Firmeza.Api
+dotnet run --project Firmeza.Api
+```
+
+Swagger UI: `https://localhost:7001/swagger` (o la URL que muestre `dotnet run`). Autoriza llamadas pegando el token obtenido en `/api/auth/login`. En `Cors:AllowedOrigins` agrega el origen exacto del cliente Blazor, por ejemplo `https://localhost:7042`; el valor vacío no permite orígenes cruzados.
+
+### Correo Gmail
+
+`IAppEmailSender` separa la lógica de notificación del transporte SMTP; `SmtpEmailSender` es la implementación actual. Configura `Email__Host=smtp.gmail.com`, `Email__Port=587`, `Email__EnableSsl=true`, `Email__User`, `Email__Password` y `Email__FromAddress` mediante secretos. Usa una contraseña de aplicación de Gmail; Google indica que estas requieren la verificación en dos pasos y publica el puerto 587 con TLS/STARTTLS para SMTP saliente ([contraseñas de aplicación](https://support.google.com/accounts/answer/185833), [parámetros SMTP](https://support.google.com/mail/answer/7104828)). Si SMTP no está configurado, registro y ventas se completan y la respuesta indica que el correo no fue enviado.
+
+AutoMapper puede configurarse con `AUTOMAPPER_LICENSE_KEY` según la licencia aplicable a la organización. Swagger incluye el esquema Bearer para JWT.
+
 ## Ejecución con Docker Compose
 
 Define una contraseña para PostgreSQL y, si usarás importación/exportación Excel, tu configuración EPPlus:
@@ -65,7 +108,7 @@ $env:EPPLUS_LICENSE = "Commercial:TU_CLAVE_DE_LICENCIA"
 docker compose up --build -d
 ```
 
-La aplicación estará disponible en `http://localhost:8080`. Compose espera a que PostgreSQL esté saludable antes de iniciar la web. Los datos de PostgreSQL y los PDF se guardan en volúmenes Docker `pgdata` y `recibos`. Para detener los contenedores: `docker compose down`. Para respaldar la base:
+La web estará disponible en `http://localhost:8080` y la API en `http://localhost:8081` (`/swagger`). Para Compose, también define `JWT_KEY` (secreto aleatorio de 32 bytes o más). Opcionalmente configura `BLAZOR_ORIGIN`, `ADMIN_EMAIL`, `ADMIN_PASSWORD` y las variables `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM_ADDRESS`. Compose espera a que PostgreSQL esté saludable antes de iniciar las aplicaciones. Los datos de PostgreSQL y los PDF se guardan en volúmenes Docker `pgdata` y `recibos`. Para detener los contenedores: `docker compose down`. Para respaldar la base:
 
 ```powershell
 docker compose exec firmeza-db pg_dump -U postgres FirmezaDB > respaldo.sql
@@ -165,5 +208,6 @@ classDiagram
 - `Firmeza.Web/Controllers`: endpoints MVC de productos, clientes, ventas, importación y exportación.
 - `Firmeza.Web/Models`: entidades, validaciones y cálculo de venta.
 - `Firmeza.Web/Services`: importación de Excel y configuración de licencia EPPlus.
+- `Firmeza.Api`: API JWT, CRUD REST, DTOs/mapeos AutoMapper, servicio de correo y Swagger.
 - `Firmeza.Web/Data` y `Migrations`: EF Core y esquema PostgreSQL.
 - `Firmeza.Tests`: pruebas unitarias xUnit.

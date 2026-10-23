@@ -1,40 +1,57 @@
-﻿@{
-    ViewData["Title"] = "Dashboard";
+@{
+    ViewData["Title"] = "Inicio";
 }
 
-<h2 class="mb-4 text-dark fw-bold">Dashboard Principal</h2>
-
-<div class="row">
-    <!-- Tarjeta de Productos -->
-    <div class="col-md-4 mb-4">
-        <div class="card text-white bg-primary shadow border-0 rounded-3">
-            <div class="card-body">
-                <h5 class="card-title fw-semibold">📦 Total Productos</h5>
-                <h2 class="display-4 fw-bold">@ViewBag.TotalProducts</h2>
-                <a asp-controller="Products" asp-action="Index" class="text-white text-decoration-none small">Ver inventario ➔</a>
-            </div>
+<section class="dashboard-hero">
+    <div class="hero-copy">
+        <div class="hero-label">Panel de control</div>
+        <h1>Todo para construir.<br />Todo bajo control.</h1>
+        <p>Administra el inventario, atiende a tus clientes y registra tus ventas desde un solo lugar.</p>
+        <div class="hero-actions">
+            <a asp-controller="Sales" asp-action="Create" class="btn btn-warning">＋ Registrar una venta</a>
+            <a asp-controller="Products" asp-action="Create" class="btn btn-outline-light">＋ Agregar producto</a>
         </div>
     </div>
+    <div class="hero-tool" aria-hidden="true"><span>⚒</span></div>
+</section>
 
-    <!-- Tarjeta de Clientes -->
-    <div class="col-md-4 mb-4">
-        <div class="card text-white bg-success shadow border-0 rounded-3">
-            <div class="card-body">
-                <h5 class="card-title fw-semibold">👥 Total Clientes</h5>
-                <h2 class="display-4 fw-bold">@ViewBag.TotalCustomers</h2>
-                <a asp-controller="Customers" asp-action="Index" class="text-white text-decoration-none small">Ver clientes ➔</a>
-            </div>
-        </div>
+<div class="section-heading">
+    <div>
+        <h2>Resumen del negocio</h2>
+        <p>Una mirada rápida a la operación de tu ferretería.</p>
     </div>
+    <span class="badge text-bg-light">Datos actualizados</span>
+</div>
 
-    <!-- Tarjeta de Ventas (Pendiente) -->
-    <div class="col-md-4 mb-4">
-        <div class="card text-white bg-warning shadow border-0 rounded-3">
-            <div class="card-body">
-                <h5 class="card-title fw-semibold">💰 Total Ventas</h5>
-                <h2 class="display-4 fw-bold">@ViewBag.TotalSales</h2>
-                <span class="text-white small">Módulo próximamente</span>
-            </div>
-        </div>
+<section class="stats-grid" aria-label="Resumen de productos, clientes y ventas">
+    <a asp-controller="Products" asp-action="Index" class="stat-card stat-products">
+        <span class="stat-accent"></span>
+        <div class="stat-top"><span>Productos en catálogo</span><span class="stat-icon">▦</span></div>
+        <div class="stat-number">@ViewBag.TotalProducts</div>
+        <div class="stat-foot">Consultar inventario <span aria-hidden="true">→</span></div>
+    </a>
+    <a asp-controller="Customers" asp-action="Index" class="stat-card stat-customers">
+        <span class="stat-accent"></span>
+        <div class="stat-top"><span>Clientes registrados</span><span class="stat-icon">♙</span></div>
+        <div class="stat-number">@ViewBag.TotalCustomers</div>
+        <div class="stat-foot">Ver directorio de clientes <span aria-hidden="true">→</span></div>
+    </a>
+    <a asp-controller="Sales" asp-action="Index" class="stat-card stat-sales">
+        <span class="stat-accent"></span>
+        <div class="stat-top"><span>Ventas realizadas</span><span class="stat-icon">↗</span></div>
+        <div class="stat-number">@ViewBag.TotalSales</div>
+        <div class="stat-foot">Consultar historial <span aria-hidden="true">→</span></div>
+    </a>
+</section>
+
+<div class="section-heading">
+    <div>
+        <h2>Accesos rápidos</h2>
+        <p>Las tareas más frecuentes, a un solo clic.</p>
     </div>
 </div>
+<section class="quick-grid" aria-label="Accesos rápidos">
+    <a asp-controller="Products" asp-action="Index" class="quick-link"><span class="quick-icon">▦</span><span><strong>Revisar productos</strong><small>Precios y existencias</small></span><span class="quick-arrow">›</span></a>
+    <a asp-controller="Customers" asp-action="Index" class="quick-link"><span class="quick-icon">♙</span><span><strong>Buscar un cliente</strong><small>Datos y contacto</small></span><span class="quick-arrow">›</span></a>
+    <a asp-controller="Imports" asp-action="Index" class="quick-link"><span class="quick-icon">⇧</span><span><strong>Importar desde Excel</strong><small>Actualizar varios registros</small></span><span class="quick-arrow">›</span></a>
+</section>

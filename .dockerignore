@@ -1,0 +1,7 @@
+.git/
+.idea/
+.vs/
+**/bin/
+**/obj/
+**/TestResults/
+Firmeza.Web/wwwroot/recibos/

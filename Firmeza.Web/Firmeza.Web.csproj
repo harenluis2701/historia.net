@@ -7,6 +7,9 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <!-- The API references this project for its DbContext and entities. Keep the API's own settings
+           as the only appsettings files in its publish directory. -->
+      <Content Remove="appsettings*.json" Condition="'$(FirmezaApiReference)' == 'true'" />
       <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.0" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0">
         <PrivateAssets>all</PrivateAssets>

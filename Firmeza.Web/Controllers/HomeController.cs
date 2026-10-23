@@ -19,7 +19,7 @@ public class HomeController : Controller
         // Contamos los registros directamente desde la base de datos
         var totalProducts = await _context.Products.CountAsync();
         var totalCustomers = await _context.Customers.CountAsync();
-        var totalSales = 0; // En cero temporalmente hasta que construyamos el módulo de ventas
+        var totalSales = await _context.Sales.CountAsync();
 
         // Enviamos los números a la vista HTML
         ViewBag.TotalProducts = totalProducts;

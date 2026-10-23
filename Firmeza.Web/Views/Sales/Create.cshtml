@@ -1,11 +1,41 @@
 @model Firmeza.Web.Models.SaleCreateViewModel
 @{ ViewData["Title"] = "Registrar venta"; }
-<h1 class="mb-4">Registrar venta</h1>
-<div class="card"><div class="card-body"><form asp-action="Create" method="post">
-<div asp-validation-summary="ModelOnly" class="text-danger"></div>
-<div class="mb-3"><label asp-for="CustomerId" class="form-label">Cliente</label><select asp-for="CustomerId" class="form-select"><option value="">Selecciona cliente</option>@foreach (var customer in Model.Customers) { <option value="@customer.Id">@customer.FullName · @customer.Document</option> }</select><span asp-validation-for="CustomerId" class="text-danger"></span></div>
-<div class="mb-3"><label asp-for="ProductId" class="form-label">Producto</label><select asp-for="ProductId" class="form-select"><option value="">Selecciona producto</option>@foreach (var product in Model.Products) { <option value="@product.Id">@product.Name · @product.Price.ToString("C") · stock @product.Stock</option> }</select><span asp-validation-for="ProductId" class="text-danger"></span></div>
-<div class="mb-3"><label asp-for="Quantity" class="form-label">Cantidad</label><input asp-for="Quantity" class="form-control" min="1"/><span asp-validation-for="Quantity" class="text-danger"></span></div>
-<button class="btn btn-primary" type="submit">Registrar y generar recibo</button> <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
-</form></div></div>
+
+<div class="page-heading">
+    <div class="page-eyebrow">Ventas</div>
+    <h1>Registrar venta</h1>
+    <p>Selecciona un cliente y agrega un producto que tenga existencias.</p>
+</div>
+
+<div class="card"><div class="card-body">
+    <form asp-action="Create" method="post">
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+        <div class="mb-3">
+            <label asp-for="CustomerId" class="form-label">Cliente</label>
+            @if (Model.Customers.Any())
+            {
+                <select asp-for="CustomerId" class="form-select"><option value="">Selecciona un cliente</option>@foreach (var customer in Model.Customers) { <option value="@customer.Id">@customer.FullName · @customer.Document</option> }</select>
+            }
+            else
+            {
+                <div class="alert alert-warning mb-0">Todavía no hay clientes registrados. <a asp-controller="Customers" asp-action="Create" class="fw-bold">Registrar un cliente</a> antes de continuar.</div>
+            }
+            <span asp-validation-for="CustomerId" class="text-danger small"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="ProductId" class="form-label">Producto</label>
+            @if (Model.Products.Any())
+            {
+                <select asp-for="ProductId" class="form-select"><option value="">Selecciona un producto</option>@foreach (var product in Model.Products) { <option value="@product.Id">@product.Name · @product.Price.ToString("C") · stock @product.Stock</option> }</select>
+            }
+            else
+            {
+                <div class="alert alert-warning mb-0">No hay productos con existencias disponibles. <a asp-controller="Products" asp-action="Index" class="fw-bold">Ve a Productos</a> y edita el stock antes de registrar la venta.</div>
+            }
+            <span asp-validation-for="ProductId" class="text-danger small"></span>
+        </div>
+        <div class="mb-4"><label asp-for="Quantity" class="form-label">Cantidad</label><input asp-for="Quantity" class="form-control" min="1" /><span asp-validation-for="Quantity" class="text-danger small"></span></div>
+        <div class="d-flex flex-wrap gap-2"><button class="btn btn-primary" type="submit" disabled="@(!Model.Customers.Any() || !Model.Products.Any())">Registrar venta y generar recibo</button><a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a></div>
+    </form>
+</div></div>
 @section Scripts { <partial name="_ValidationScriptsPartial" /> }

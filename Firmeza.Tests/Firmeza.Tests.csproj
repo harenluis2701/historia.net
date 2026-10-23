@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Firmeza.Web\Firmeza.Web.csproj" />
+    <ProjectReference Include="..\Firmeza.Api\Firmeza.Api.csproj" />
   </ItemGroup>
 
 </Project>

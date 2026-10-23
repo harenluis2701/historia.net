@@ -1,62 +1,75 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Firmeza Dashboard</title>
-    <!-- Mantiene los estilos de Bootstrap por defecto de .NET -->
+    <meta name="theme-color" content="#111827" />
+    <title>@ViewData["Title"] · Firmeza</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <!-- Llama a tu archivo site.css personalizado -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 <body>
-    <!-- Barra superior oscura (Navbar) -->
-    <header>
-        <nav class="navbar navbar-dark bg-dark border-bottom border-secondary px-3">
-            <a class="navbar-brand fw-bold" asp-area="" asp-controller="Home" asp-action="Index">FIRMEZA ADMIN</a>
-            <div class="d-flex align-items-center">
-                <span class="text-light me-3">Bienvenido, Administrador</span>
-                <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
-                    <button type="submit" class="btn btn-sm btn-outline-danger">Cerrar Sesión</button>
-                </form>
-            </div>
-        </nav>
-    </header>
+    @{
+        var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+        var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+        string Active(string controller, string? action = null) =>
+            currentController == controller && (action is null || currentAction == action) ? "active" : string.Empty;
+    }
+    <div class="app-shell">
+        <aside class="sidebar" id="sidebar">
+            <a class="brand" asp-controller="Home" asp-action="Index" aria-label="Firmeza, inicio">
+                <span class="brand-mark">F<span>.</span></span>
+                <span class="brand-copy"><strong>FIRMEZA</strong><small>FERRETERÍA · GESTIÓN</small></span>
+            </a>
 
-    <div class="wrapper">
-        <!-- Menú Lateral (Sidebar) -->
-        <aside class="sidebar pt-2">
-            <ul class="list-unstyled mb-0">
-                <li>
-                    <a asp-controller="Home" asp-action="Index">📊 Inicio (Dashboard)</a>
-                </li>
-                <li>
-                    <a asp-controller="Products" asp-action="Index">📦 Gestión de Productos</a>
-                </li>
-                <li>
-                    <a asp-controller="Customers" asp-action="Index">👥 Gestión de Clientes</a>
-                </li>
-                <li>
-                    <a asp-controller="Sales" asp-action="Index">💰 Registro de Ventas</a>
-                </li>
-                <li>
-                    <a asp-controller="Imports" asp-action="Index">📥 Importación Excel</a>
-                </li>
-                <li>
-                    <a asp-controller="Exports" asp-action="Index">📤 Exportar datos</a>
-                </li>
-            </ul>
+            <div class="sidebar-caption">MENÚ PRINCIPAL</div>
+            <nav class="side-nav" aria-label="Navegación principal">
+                <a class="side-link @Active("Home")" asp-controller="Home" asp-action="Index"><span class="nav-icon">⌂</span><span>Inicio</span></a>
+                <a class="side-link @Active("Products")" asp-controller="Products" asp-action="Index"><span class="nav-icon">▦</span><span>Productos</span></a>
+                <a class="side-link @Active("Customers")" asp-controller="Customers" asp-action="Index"><span class="nav-icon">♙</span><span>Clientes</span></a>
+                <a class="side-link @Active("Sales")" asp-controller="Sales" asp-action="Index"><span class="nav-icon">↗</span><span>Ventas</span></a>
+            </nav>
+
+            <div class="sidebar-caption sidebar-caption-spaced">HERRAMIENTAS</div>
+            <nav class="side-nav" aria-label="Herramientas">
+                <a class="side-link @Active("Imports")" asp-controller="Imports" asp-action="Index"><span class="nav-icon">⇧</span><span>Importar Excel</span></a>
+                <a class="side-link @Active("Exports")" asp-controller="Exports" asp-action="Index"><span class="nav-icon">⇩</span><span>Exportar información</span></a>
+            </nav>
+
+            <div class="sidebar-help">
+                <span class="help-dot"></span>
+                <div><strong>Todo en orden</strong><small>Tu negocio, bajo control</small></div>
+            </div>
+            <div class="sidebar-version">FIRMEZA <span>·</span> PANEL DE GESTIÓN</div>
         </aside>
 
-        <!-- Contenedor Principal y Footer -->
-        <div class="d-flex flex-column w-100">
+        <div class="app-main">
+            <header class="topbar">
+                <button class="menu-toggle" type="button" aria-label="Abrir menú" aria-controls="sidebar" aria-expanded="false">☰</button>
+                <div class="topbar-context"><span class="context-kicker">FERRETERÍA FIRMEZA</span><span class="context-divider">/</span><span>@ViewData["Title"]</span></div>
+                <div class="topbar-account">
+                    <div class="account-avatar">@(User.Identity?.IsAuthenticated == true ? User.Identity.Name?.Substring(0, 1).ToUpperInvariant() : "F")</div>
+                    <div class="account-copy"><strong>@(User.Identity?.IsAuthenticated == true ? User.Identity.Name : "Panel de gestión")</strong><small>@(User.Identity?.IsAuthenticated == true ? "Sesión activa" : "Bienvenido")</small></div>
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
+                            <button type="submit" class="logout-button" title="Cerrar sesión" aria-label="Cerrar sesión">↪</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <a asp-controller="Account" asp-action="Login" class="btn btn-primary btn-sm">Iniciar sesión</a>
+                    }
+                </div>
+            </header>
+
             <main role="main" class="main-content">
                 @RenderBody()
             </main>
-            
-            <!-- Pie de página (Footer) agregado para la Task 9 -->
+
             <footer class="admin-footer">
-                &copy; @DateTime.Now.Year - Firmeza Dashboard. Todos los derechos reservados. | Desarrollado para la gestión de inventarios y clientes.
+                <span>© @DateTime.Now.Year <strong>Firmeza</strong></span>
+                <span>Herramientas, materiales y confianza para construir.</span>
             </footer>
         </div>
     </div>

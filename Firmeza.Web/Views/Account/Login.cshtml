@@ -1,37 +1,26 @@
-﻿@model Firmeza.Web.Models.LoginViewModel
-
+@model Firmeza.Web.Models.LoginViewModel
 @{
-    ViewData["Title"] = "Iniciar Sesión";
+    ViewData["Title"] = "Iniciar sesión";
 }
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-5">
-            <h2 class="mb-4 text-center">Iniciar Sesión</h2>
-
-            <form asp-action="Login" method="post" class="card p-4 shadow-sm">
-                
-                @* Muestra mensajes de error generales (ej. "Correo o contraseña incorrectos") *@
-                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-
-                <div class="mb-3">
-                    <label asp-for="Email" class="form-label">Correo Electrónico</label>
-                    <input asp-for="Email" class="form-control" placeholder="ejemplo@correo.com" />
-                    <span asp-validation-for="Email" class="text-danger"></span>
-                </div>
-
-                <div class="mb-4">
-                    <label asp-for="Password" class="form-label">Contraseña</label>
-                    <input asp-for="Password" class="form-control" type="password" />
-                    <span asp-validation-for="Password" class="text-danger"></span>
-                </div>
-
-                <button type="submit" class="btn btn-primary w-100 mb-3">Entrar</button>
-
-                <div class="text-center">
-                    <p class="mb-0">¿No tienes cuenta? <a asp-action="Register">Regístrate aquí</a></p>
-                </div>
-            </form>
+<section class="login-panel">
+    <div class="login-brand"><span class="brand-mark">F<span>.</span></span><span>FERRETERÍA FIRMEZA</span></div>
+    <form asp-action="Login" method="post" class="login-card">
+        <div class="page-eyebrow">Qué bueno tenerte de vuelta</div>
+        <h1>Inicia sesión</h1>
+        <p class="text-muted mb-4">Ingresa al panel para administrar tu negocio.</p>
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+        <div class="mb-3">
+            <label asp-for="Email" class="form-label">Correo electrónico</label>
+            <input asp-for="Email" class="form-control" placeholder="nombre@correo.com" autocomplete="username" />
+            <span asp-validation-for="Email" class="text-danger small"></span>
         </div>
-    </div>
-</div>
+        <div class="mb-4">
+            <label asp-for="Password" class="form-label">Contraseña</label>
+            <input asp-for="Password" class="form-control" type="password" placeholder="Escribe tu contraseña" autocomplete="current-password" />
+            <span asp-validation-for="Password" class="text-danger small"></span>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Entrar al panel <span aria-hidden="true">→</span></button>
+        <p class="text-center text-muted mt-4 mb-0 small">¿Aún no tienes una cuenta? <a asp-action="Register" class="fw-bold">Regístrate aquí</a></p>
+    </form>
+</section>
