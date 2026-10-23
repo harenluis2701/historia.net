@@ -64,6 +64,7 @@ builder.Services.AddAutoMapper(configuration =>
     configuration.LicenseKey = builder.Configuration["AutoMapper:LicenseKey"] ?? Environment.GetEnvironmentVariable("AUTOMAPPER_LICENSE_KEY");
 }, typeof(ApiMappingProfile).Assembly);
 builder.Services.AddScoped<ITokenService, JwtTokenService>();
+builder.Services.AddScoped<IReceiptPdfService, ReceiptPdfService>();
 builder.Services.Configure<SmtpEmailOptions>(builder.Configuration.GetSection(SmtpEmailOptions.SectionName));
 builder.Services.AddScoped<IAppEmailSender, SmtpEmailSender>();
 builder.Services.AddControllers();
@@ -87,7 +88,7 @@ builder.Services.AddSwaggerGen(options =>
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
 builder.Services.AddCors(options => options.AddPolicy("PortalClients", policy =>
 {
-    if (allowedOrigins.Length > 0) policy.WithOrigins(allowedOrigins).AllowAnyHeader().AllowAnyMethod();
+    if (allowedOrigins.Length > 0) policy.WithOrigins(allowedOrigins).AllowAnyHeader().AllowAnyMethod().WithExposedHeaders("X-Email-Sent");
 }));
 
 var app = builder.Build();

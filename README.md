@@ -100,21 +100,27 @@ AutoMapper puede configurarse con `AUTOMAPPER_LICENSE_KEY` según la licencia ap
 
 ## Ejecución con Docker Compose
 
-Define una contraseña para PostgreSQL y, si usarás importación/exportación Excel, tu configuración EPPlus:
+En Windows, instala e inicia Docker Desktop, copia la carpeta completa del proyecto al nuevo PC y haz doble clic en `Iniciar-Firmeza.bat`. En Linux, instala Docker Engine y Docker Compose, copia la carpeta del proyecto y ejecuta `./iniciar-firmeza.sh` desde una terminal. Si hace falta, dale permiso de ejecución una vez con `chmod +x iniciar-firmeza.sh`.
+
+Ambos scripts crean `.env` desde `.env.example` si todavía no existe, construyen las imágenes y levantan PostgreSQL, la web Razor, la API y el portal React. Luego muestran las direcciones locales y abren el portal si el sistema tiene un comando para abrir el navegador. La primera compilación puede tardar varios minutos y requiere internet para descargar imágenes y paquetes.
+
+También se puede iniciar desde una terminal en la carpeta del proyecto:
 
 ```powershell
-$env:POSTGRES_PASSWORD = "una-clave-segura"
-$env:EPPLUS_LICENSE = "Commercial:TU_CLAVE_DE_LICENCIA"
 docker compose up --build -d
 ```
 
-La web estará disponible en `http://localhost:8080` y la API en `http://localhost:8081` (`/swagger`). Para Compose, también define `JWT_KEY` (secreto aleatorio de 32 bytes o más). Opcionalmente configura `BLAZOR_ORIGIN`, `ADMIN_EMAIL`, `ADMIN_PASSWORD` y las variables `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM_ADDRESS`. Compose espera a que PostgreSQL esté saludable antes de iniciar las aplicaciones. Los datos de PostgreSQL y los PDF se guardan en volúmenes Docker `pgdata` y `recibos`. Para detener los contenedores: `docker compose down`. Para respaldar la base:
+Para detener los servicios sin borrar los datos persistentes, ejecuta `docker compose down`. No uses `docker compose down -v` salvo que quieras eliminar también los volúmenes de base de datos y recibos.
+
+El portal estará disponible en `http://localhost:5173`, la web Razor en `http://localhost:8080` y Swagger de la API en `http://localhost:8081/swagger`. Los datos de PostgreSQL y los PDF se guardan en volúmenes Docker `pgdata` y `recibos`. Para respaldar la base:
 
 ```powershell
 docker compose exec firmeza-db pg_dump -U postgres FirmezaDB > respaldo.sql
 ```
 
-Guarda las claves en un gestor de secretos en cualquier despliegue compartido. Las migraciones se ejecutan al arrancar; al desplegar varias réplicas, aplica las migraciones una sola vez antes de escalar la aplicación.
+El archivo `.env` es opcional para el arranque básico. Edita una copia de `.env.example` para configurar `SMTP_USER`, `SMTP_PASSWORD` y `SMTP_FROM_ADDRESS` si quieres enviar correos; `ADMIN_EMAIL` y `ADMIN_PASSWORD` si quieres crear el administrador inicial; y `EPPLUS_LICENSE` si vas a usar Excel. En un entorno real, cambia `JWT_KEY` por una clave aleatoria privada de al menos 32 bytes. No compartas `.env`.
+
+Compose crea una base nueva y aplica las migraciones automáticamente; al transferir el proyecto a otro PC no transfiere los datos que estaban en el volumen Docker anterior. Si necesitas conservar productos, clientes y ventas, genera un respaldo con `pg_dump` en el equipo original y restáuralo en el nuevo. Los puertos `5432`, `5173`, `8080` y `8081` deben estar disponibles. Las migraciones se ejecutan al arrancar; al desplegar varias réplicas, aplica las migraciones una sola vez antes de escalar la aplicación.
 
 ## Pruebas
 
@@ -211,3 +217,21 @@ classDiagram
 - `Firmeza.Api`: API JWT, CRUD REST, DTOs/mapeos AutoMapper, servicio de correo y Swagger.
 - `Firmeza.Web/Data` y `Migrations`: EF Core y esquema PostgreSQL.
 - `Firmeza.Tests`: pruebas unitarias xUnit.
+- `Firmeza.Portal`: SPA React para compras de clientes, autenticación JWT, carrito e historial.
+
+## Portal de clientes React
+
+El portal se ejecuta independiente de la aplicación Razor. Inicia PostgreSQL y la API en el puerto `8081`, luego ejecuta:
+
+```powershell
+cd Firmeza.Portal
+npm install
+Copy-Item .env.example .env
+npm run dev
+```
+
+Abre `http://localhost:5173`. `VITE_API_BASE_URL` permite cambiar la URL base de la API (por defecto `http://localhost:8081/api`). En desarrollo, la API permite el origen `http://localhost:5173` desde `appsettings.Development.json`; en Docker, `BLAZOR_ORIGIN` controla el origen permitido.
+
+El portal solo usa registro e inicio de sesión, perfil del cliente, catálogo con inventario disponible, creación e historial de compras y descarga del comprobante. El token JWT se guarda en `sessionStorage`, se envía como Bearer y se elimina al cerrar sesión, vencer o recibir un `401`. Ejecuta sus verificaciones con `npm test` y genera el paquete web con `npm run build`.
+
+Después de cada compra, la API genera el comprobante PDF, lo devuelve en `GET /api/sales/{id}/receipt` y lo adjunta al correo de confirmación. Para enviar correos reales configura `SMTP_USER`, `SMTP_PASSWORD` (contraseña de aplicación de Gmail) y `SMTP_FROM_ADDRESS` en Docker Compose; en ejecución local usa las variables `Email__User`, `Email__Password` y `Email__FromAddress`. Si SMTP no está configurado, la compra se registra y el PDF sigue disponible para descargar, pero no se debe mostrar como enviado.

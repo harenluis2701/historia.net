@@ -7,6 +7,12 @@ namespace Firmeza.Api.Services;
 public class SmtpEmailSender(IOptions<SmtpEmailOptions> options, ILogger<SmtpEmailSender> logger) : IAppEmailSender
 {
     public async Task<bool> SendAsync(string recipient, string subject, string body, CancellationToken cancellationToken = default)
+        => await SendCoreAsync(recipient, subject, body, null, null, cancellationToken);
+
+    public async Task<bool> SendWithAttachmentAsync(string recipient, string subject, string body, byte[] attachment, string fileName, CancellationToken cancellationToken = default)
+        => await SendCoreAsync(recipient, subject, body, attachment, fileName, cancellationToken);
+
+    private async Task<bool> SendCoreAsync(string recipient, string subject, string body, byte[]? attachment, string? fileName, CancellationToken cancellationToken)
     {
         var smtp = options.Value;
         if (string.IsNullOrWhiteSpace(smtp.Host) || string.IsNullOrWhiteSpace(smtp.User) ||
@@ -26,6 +32,11 @@ public class SmtpEmailSender(IOptions<SmtpEmailOptions> options, ILogger<SmtpEma
                 IsBodyHtml = false
             };
             message.To.Add(new MailAddress(recipient));
+            if (attachment is not null)
+            {
+                var stream = new MemoryStream(attachment);
+                message.Attachments.Add(new Attachment(stream, fileName ?? "comprobante.pdf", "application/pdf"));
+            }
             using var client = new SmtpClient(smtp.Host, smtp.Port)
             {
                 EnableSsl = smtp.EnableSsl,

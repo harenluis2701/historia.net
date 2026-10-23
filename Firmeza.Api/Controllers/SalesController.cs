@@ -14,7 +14,7 @@ namespace Firmeza.Api.Controllers;
 [ApiController]
 [Route("api/sales")]
 [Authorize]
-public class SalesController(ApplicationDbContext db, IMapper mapper, IAppEmailSender emailSender) : ControllerBase
+public class SalesController(ApplicationDbContext db, IMapper mapper, IAppEmailSender emailSender, IReceiptPdfService receiptPdf) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<IEnumerable<SaleDto>>> GetAll(CancellationToken cancellationToken)
@@ -74,11 +74,30 @@ public class SalesController(ApplicationDbContext db, IMapper mapper, IAppEmailS
         db.Sales.Add(sale);
         await db.SaveChangesAsync(cancellationToken);
 
-        var emailSent = await emailSender.SendAsync(customer.Email, $"Confirmación de compra #{sale.Id}",
-            $"Hola {customer.FullName}, registramos tu compra #{sale.Id} por {sale.Total:C}.", cancellationToken);
-        Response.Headers["X-Email-Sent"] = emailSent.ToString().ToLowerInvariant();
         var created = await SaleQuery().FirstAsync(s => s.Id == sale.Id, cancellationToken);
+        var pdf = receiptPdf.Generate(created);
+        var emailSent = await emailSender.SendWithAttachmentAsync(customer.Email, $"Confirmación de compra #{sale.Id}",
+            $"Hola {customer.FullName}, adjuntamos el comprobante de tu compra #{sale.Id} por {sale.Total:C}.",
+            pdf, $"comprobante-firmeza-{sale.Id}.pdf", cancellationToken);
+        Response.Headers["X-Email-Sent"] = emailSent.ToString().ToLowerInvariant();
         return CreatedAtAction(nameof(GetById), new { id = sale.Id }, mapper.Map<SaleDto>(created));
+    }
+
+    [HttpGet("{id:int}/receipt")]
+    [Authorize(Roles = ApiRoles.Admin + "," + ApiRoles.Customer)]
+    public async Task<IActionResult> Receipt(int id, CancellationToken cancellationToken)
+    {
+        var sale = await SaleQuery().FirstOrDefaultAsync(s => s.Id == id, cancellationToken);
+        if (sale is null) return NotFound();
+
+        if (User.IsInRole(ApiRoles.Customer))
+        {
+            var customer = await FindCurrentCustomer(cancellationToken);
+            if (customer is null || customer.Id != sale.CustomerId) return Forbid();
+        }
+        else if (!User.IsInRole(ApiRoles.Admin)) return Forbid();
+
+        return File(receiptPdf.Generate(sale), "application/pdf", $"comprobante-firmeza-{sale.Id}.pdf");
     }
 
     [HttpPut("{id:int}")]

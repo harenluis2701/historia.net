@@ -4,4 +4,7 @@
 **/bin/
 **/obj/
 **/TestResults/
+**/node_modules/
+Firmeza.Portal/dist/
+Firmeza.Portal/.env
 Firmeza.Web/wwwroot/recibos/
