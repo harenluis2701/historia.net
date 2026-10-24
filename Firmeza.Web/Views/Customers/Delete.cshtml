@@ -1,4 +1,4 @@
-﻿@model Firmeza.Web.Models.Customer
+@model Firmeza.Web.Models.Customer
 
 @{
     ViewData["Title"] = "Eliminar Cliente";
@@ -31,7 +31,6 @@
             </dl>
         </div>
         <div class="card-footer bg-white border-0 text-end p-4 pt-0">
-            <!-- Este formulario envía la confirmación definitiva al método POST -->
             <form asp-action="Delete" method="post">
                 <input type="hidden" asp-for="Id" />
                 <a asp-action="Index" class="btn btn-outline-secondary me-2 shadow-sm">Cancelar</a>

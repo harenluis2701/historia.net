@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Firmeza.Web.Models;
 
@@ -20,9 +20,6 @@ public class AccountController : Controller
         _roleManager = roleManager;
     }
 
-    // ==========================================
-    // 1. REGISTRO DE USUARIOS
-    // ==========================================
     [HttpGet]
     public IActionResult Register()
     {
@@ -57,9 +54,6 @@ public class AccountController : Controller
         return View(model);
     }
 
-    // ==========================================
-    // 2. INICIO DE SESIÓN (LOGIN)
-    // ==========================================
     [HttpGet]
     public IActionResult Login()
     {
@@ -71,7 +65,6 @@ public class AccountController : Controller
     {
         if (ModelState.IsValid)
         {
-            // Intenta iniciar sesión comparando la contraseña encriptada
             var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, isPersistent: false, lockoutOnFailure: false);
 
             if (result.Succeeded)
@@ -79,15 +72,11 @@ public class AccountController : Controller
                 return RedirectToAction("Index", "Home");
             }
 
-            // Si falla, muestra error genérico por seguridad
             ModelState.AddModelError(string.Empty, "Correo o contraseña incorrectos.");
         }
         return View(model);
     }
 
-    // ==========================================
-    // 3. CERRAR SESIÓN (LOGOUT)
-    // ==========================================
     [HttpPost]
     public async Task<IActionResult> Logout()
     {

@@ -1,9 +1,18 @@
-﻿services:
-  # Servicio 1: Base de datos PostgreSQL
-  firmeza-db:
+services:
+  tests:
+    build:
+      context: .
+      dockerfile: Firmeza.Tests/Dockerfile
+    container_name: firmeza-tests
+    restart: "no"
+
+  db:
     image: postgres:17-alpine
     container_name: firmeza-db
     restart: unless-stopped
+    depends_on:
+      tests:
+        condition: service_completed_successfully
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: FirmezaHaren
@@ -18,39 +27,22 @@
     volumes:
       - pgdata:/var/lib/postgresql/data
 
-  # Servicio 2: Aplicación web
-  firmeza-web:
-    build:
-      context: ./Firmeza.Web
-      dockerfile: Dockerfile
-    container_name: firmeza-web
-    restart: unless-stopped
-    ports:
-      - "8080:8080"
-    depends_on:
-      firmeza-db:
-        condition: service_healthy
-    environment:
-      ASPNETCORE_ENVIRONMENT: Production
-      EPPlus__License: ${EPPLUS_LICENSE:-}
-      ConnectionStrings__DefaultConnection: Host=firmeza-db;Port=5432;Database=FirmezaDB;Username=postgres;Password=FirmezaHaren
-    volumes:
-      - recibos:/app/wwwroot/recibos
-
-  firmeza-api:
+  api:
     build:
       context: .
       dockerfile: Firmeza.Api/Dockerfile
     container_name: firmeza-api
     restart: unless-stopped
+    depends_on:
+      tests:
+        condition: service_completed_successfully
+      db:
+        condition: service_healthy
     ports:
       - "8081:8080"
-    depends_on:
-      firmeza-db:
-        condition: service_healthy
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-      ConnectionStrings__DefaultConnection: Host=firmeza-db;Port=5432;Database=FirmezaDB;Username=postgres;Password=FirmezaHaren
+      ConnectionStrings__DefaultConnection: Host=db;Port=5432;Database=FirmezaDB;Username=postgres;Password=FirmezaHaren
       Jwt__Key: ${JWT_KEY:-FirmezaSilvaFirmezaSilvaFirmezaSilva}
       Cors__AllowedOrigins__0: ${BLAZOR_ORIGIN:-http://localhost:5173}
       Email__Host: smtp.gmail.com
@@ -63,7 +55,27 @@
       BootstrapAdmin__Email: ${ADMIN_EMAIL:-}
       BootstrapAdmin__Password: ${ADMIN_PASSWORD:-}
 
-  firmeza-portal:
+  admin:
+    build:
+      context: ./Firmeza.Web
+      dockerfile: Dockerfile
+    container_name: firmeza-web
+    restart: unless-stopped
+    depends_on:
+      tests:
+        condition: service_completed_successfully
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      EPPlus__License: ${EPPLUS_LICENSE:-}
+      ConnectionStrings__DefaultConnection: Host=db;Port=5432;Database=FirmezaDB;Username=postgres;Password=FirmezaHaren
+    volumes:
+      - recibos:/app/wwwroot/recibos
+
+  client:
     build:
       context: ./Firmeza.Portal
       dockerfile: Dockerfile
@@ -71,14 +83,14 @@
         VITE_API_BASE_URL: ${PORTAL_API_URL:-http://localhost:8081/api}
     container_name: firmeza-portal
     restart: unless-stopped
+    depends_on:
+      tests:
+        condition: service_completed_successfully
+      api:
+        condition: service_started
     ports:
       - "5173:80"
-    depends_on:
-      - firmeza-api
 
 volumes:
   pgdata:
   recibos:
-
-
-

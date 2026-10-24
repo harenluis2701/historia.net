@@ -1,4 +1,4 @@
-﻿@model Firmeza.Web.Models.Product
+@model Firmeza.Web.Models.Product
 
 @{
     ViewData["Title"] = "Eliminar Producto";
@@ -19,7 +19,6 @@
             <dd class="col-sm-9">@Model.Price</dd>
         </dl>
         
-        @* Este formulario envía la confirmación definitiva al método POST *@
         <form asp-action="Delete" method="post">
             <input type="hidden" asp-for="Id" />
             <button type="submit" class="btn btn-danger">Sí, Eliminar Definitivamente</button>

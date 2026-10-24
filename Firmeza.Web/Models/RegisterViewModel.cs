@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace Firmeza.Web.Models;
 
@@ -12,7 +12,6 @@ public class RegisterViewModel
     [DataType(DataType.Password)]
     public string Password { get; set; } = string.Empty;
 
-    // Aquí guardaremos si el usuario seleccionó ser Administrador o Cliente
     [Required(ErrorMessage = "Debes seleccionar un rol para este usuario.")]
     public string Role { get; set; } = string.Empty;
 }

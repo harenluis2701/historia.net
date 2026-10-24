@@ -102,7 +102,7 @@ AutoMapper puede configurarse con `AUTOMAPPER_LICENSE_KEY` según la licencia ap
 
 En Windows, instala e inicia Docker Desktop, copia la carpeta completa del proyecto al nuevo PC y haz doble clic en `Iniciar-Firmeza.bat`. En Linux, instala Docker Engine y Docker Compose, copia la carpeta del proyecto y ejecuta `./iniciar-firmeza.sh` desde una terminal. Si hace falta, dale permiso de ejecución una vez con `chmod +x iniciar-firmeza.sh`.
 
-Ambos scripts crean `.env` desde `.env.example` si todavía no existe, construyen las imágenes y levantan PostgreSQL, la web Razor, la API y el portal React. Luego muestran las direcciones locales y abren el portal si el sistema tiene un comando para abrir el navegador. La primera compilación puede tardar varios minutos y requiere internet para descargar imágenes y paquetes.
+Ambos scripts crean `.env` desde `.env.example` si todavía no existe y ejecutan `docker compose up --build -d`. Compose construye los servicios, ejecuta primero `Firmeza.Tests` y solo cuando termina correctamente levanta PostgreSQL, la API, la web Razor y el portal React. Si alguna prueba falla, el servicio `tests` termina con error y Compose no inicia la base ni las aplicaciones. Luego los scripts muestran las direcciones locales y abren el portal si el sistema tiene un comando para abrir el navegador. La primera compilación puede tardar varios minutos y requiere internet para descargar imágenes y paquetes.
 
 También se puede iniciar desde una terminal en la carpeta del proyecto:
 
@@ -112,10 +112,10 @@ docker compose up --build -d
 
 Para detener los servicios sin borrar los datos persistentes, ejecuta `docker compose down`. No uses `docker compose down -v` salvo que quieras eliminar también los volúmenes de base de datos y recibos.
 
-El portal estará disponible en `http://localhost:5173`, la web Razor en `http://localhost:8080` y Swagger de la API en `http://localhost:8081/swagger`. Los datos de PostgreSQL y los PDF se guardan en volúmenes Docker `pgdata` y `recibos`. Para respaldar la base:
+El portal estará disponible en `http://localhost:5173`, la web Razor en `http://localhost:8080` y Swagger de la API en `http://localhost:8081/swagger`. Los datos de PostgreSQL y los PDF se guardan en volúmenes Docker `pgdata` y `recibos`. El servicio de pruebas usa `Firmeza.Tests/Dockerfile`; la web, la API y el cliente tienen Dockerfiles de producción independientes. Para respaldar la base:
 
 ```powershell
-docker compose exec firmeza-db pg_dump -U postgres FirmezaDB > respaldo.sql
+docker compose exec db pg_dump -U postgres FirmezaDB > respaldo.sql
 ```
 
 El archivo `.env` es opcional para el arranque básico. Edita una copia de `.env.example` para configurar `SMTP_USER`, `SMTP_PASSWORD` y `SMTP_FROM_ADDRESS` si quieres enviar correos; `ADMIN_EMAIL` y `ADMIN_PASSWORD` si quieres crear el administrador inicial; y `EPPLUS_LICENSE` si vas a usar Excel. En un entorno real, cambia `JWT_KEY` por una clave aleatoria privada de al menos 32 bytes. No compartas `.env`.

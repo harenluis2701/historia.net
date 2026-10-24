@@ -5,6 +5,8 @@
 **/obj/
 **/TestResults/
 **/node_modules/
+**/.env
 Firmeza.Portal/dist/
 Firmeza.Portal/.env
 Firmeza.Web/wwwroot/recibos/
+CREDENCIALES-LOCAL.md

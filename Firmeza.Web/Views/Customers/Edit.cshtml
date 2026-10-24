@@ -1,4 +1,4 @@
-﻿@model Firmeza.Web.Models.Customer
+@model Firmeza.Web.Models.Customer
 
 @{
     ViewData["Title"] = "Editar Cliente";
@@ -11,7 +11,6 @@
         <div class="card-body p-4">
             <form asp-action="Edit" method="post">
                 
-                <!-- ¡MUY IMPORTANTE! Campo oculto con el ID del cliente -->
                 <input type="hidden" asp-for="Id" />
 
                 <div class="row">
